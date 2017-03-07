@@ -14,15 +14,36 @@
 		<![endif]-->
 	</head>
 
+	<style> 
+
+	h1{
+	color: green;
+	font-size: 40px;
+	line-height: 5px;
+	font-family: Georgia, serif	;
+	}
+
+	h2{
+	font-size: 20px;
+	font-family: Georgia, serif	;
+	}
+
+	</style>
+
+
 	<body>
 		
 		
 		<!--you can also use this space for internal scripts or stylesheets;
 		place these within <script> or <style> tags-->
-
+		<h1> <center>Easy Breathing</center> </h1>
+		<h2> <center>How is the air quality in our most populated cities?</center></h2>
 		<!--put your external script links here-->
 		<div id="mapid"> </div>
-		<div id="panel"> </div>
+		<div id="panel">
+			<div id = "sequenceControls"> </div>
+		 <div id="textPanel"></div>
+		</div>
 		<script type="text/javascript" src="lib/jquery-3.1.1.min (1).js"></script>
 		<script type="text/javascript" src="lib/leaflet.js"></script>
 		<script type="text/javascript" src="lib/leaflet-providers.js"></script>

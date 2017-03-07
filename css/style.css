@@ -5,12 +5,32 @@
 }
 
 #panel {
-    width: 16%;
+    width: 200px;
+    height: 320px;
     padding: 20px;
     display: inline-block;
     vertical-align: top;
-     text-align: center;
+    text-align: center;
     line-height: 42px;
+    background-color:  #bdbdbd;
+
+
+}
+
+#sequenceControls{
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    line-height: 42px;
+}
+
+#textPanel{
+	font-family: Times, serif;
+    text-align: left;
+    line-height: 1;
+    font-size: 15px;
+    color: black;
+
 }
 
 .range-slider {
@@ -19,8 +39,10 @@
 
 #forward {
     float: right;
+    margin-top: 5px;
 }
 
 #reverse {
     float: left;
+    margin-top: 5px;
 }

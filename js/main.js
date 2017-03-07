@@ -3,7 +3,14 @@
 //function to instantiate the Leaflet map
 function createMap(){
     //create the map and zooms it in to the US
-    var map = L.map('mapid').setView([39.82, -98.58], 3);
+    // var map = L.map('mapid').setView([39.82, -98.58], 3);
+    var map = L.map('mapid', {
+    center: [39.82, -98.58],
+    zoom: 3,
+    minZoom: 3
+
+    });
+
 
 
 L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
@@ -45,31 +52,7 @@ function calcPropRadius(attValue) {
     return radius;
 };
 
-//Add circle markers for point features to the map
-// function createPropSymbols(data, map){
-//     var attribute = "AQI_16";
-//     //create marker options
-//     var geojsonMarkerOptions = {
-//         fillColor: "#ff7800",
-//         color: "#000",
-//         weight: 1,
-//         opacity: 1,
-//         fillOpacity: 0.8
-//     };
 
-//     //create a Leaflet GeoJSON layer and add it to the map
-//     L.geoJson(data, {
-//         pointToLayer: function (feature, latlng) {
-//             //Step 5: For each feature, determine its value for the selected attribute
-//             var attValue = Number(feature.properties[attribute]);
-
-//             //examine the attribute value to check that it is correct
-//             geojsonMarkerOptions.radius = calcPropRadius(attValue);
-
-//             return L.circleMarker(latlng, geojsonMarkerOptions);
-//         }
-//     }).addTo(map);
-// };
 
 //function to convert markers to circle markers
 function pointToLayer(feature, latlng, attributes){
@@ -79,7 +62,7 @@ function pointToLayer(feature, latlng, attributes){
 
     //create marker options
     var options = {
-        fillColor: "#ff7800",
+        fillColor: "#2ca25f",
         color: "#000",
         weight: 1,
         opacity: 1,
@@ -121,7 +104,7 @@ function createPropSymbols(data, map, attributes){
 //Step 1: Create new sequence controls
 function createSequenceControls(map, attributes){
     //create range input element (slider)
-    $('#panel').append('<input class="range-slider" type="range">');
+    $('#sequenceControls').append('<input class="range-slider" type="range">');
 
      //set slider attributes
     $('.range-slider').attr({
@@ -130,8 +113,14 @@ function createSequenceControls(map, attributes){
         value: 0,
         step: 1
     });
-    $('#panel').append('<button class="skip" id="reverse">Reverse</button>');
-    $('#panel').append('<button class="skip" id="forward">Skip</button>');
+
+    //appends button to div
+    $('#sequenceControls').append('<button class="skip" id="reverse" </button>');
+    $('#sequenceControls').append('<button class="skip" id="forward" </button>');
+
+    //appends icons to buttons
+    $('#reverse').html('<img src="img/reverse.png">');
+    $('#forward').html('<img src="img/forward.png">');
 
     //Step 5: click listener for buttons
     $('.skip').click(function(){
@@ -158,7 +147,8 @@ function createSequenceControls(map, attributes){
     $('.range-slider').on('input', function(){
         //Step 6: get the new index value
         var index = $(this).val();  
-        updatePropSymbols(map, attributes[index]);  
+        updatePropSymbols(map, attributes[index]);
+
     });
 };
 
@@ -184,6 +174,9 @@ function updatePropSymbols(map, attribute){
             layer.bindPopup(popupContent, {
                 offset: new L.Point(0,-radius)
             });
+
+            //updates legend every time prop symbols are updated
+            updateLegend(map, attribute); 
         };
     });
 };
@@ -210,22 +203,29 @@ function processData(data){
 };
 
 function overlayData(map){
+    //var stores the icon for the pollution sources
+    var icon = L.icon({
+        iconUrl: 'img/smokestack.png',
+        iconSize:     [50, 50], // size of the icon
+        popupAnchor: [-10,-10]
+    });
 
     //var stores the pollution sources
-    var scherer = L.marker([33.06259, -83.80388]).bindPopup('Scherer Power Plant'),
-        alabama = L.marker([33.631013, -87.057016]).bindPopup('Alabama Power Company'),
-        navajo = L.marker([36.903548, -87.767415]).bindPopup('Navajo Power Plant'),
-        gibson = L.marker([38.372031, -87.767415]).bindPopup('Gibson Power Plant'),
-        washington = L.marker([29.484399, -95.62942]).bindPopup('W.A. Parish Power Plant'),
-        rockport = L.marker([37.92739, -87.038363]).bindPopup('Rockport Power Plant'),
-        bowen = L.marker([34.113739, -84.925529]).bindPopup('Bowen Power Plant'),
-        bruce= L.marker([40.630728, -80.42155]).bindPopup('Bruce Mansfield Power Plant'),
-        gavin = L.marker([38.94229, -82.112083]).bindPopup('Gavin Power Plant'),
-        calaveras = L.marker([29.289989, -98.353913]).bindPopup('Calaveras Power Station');
+    var scherer = L.marker([33.06259, -83.80388], {icon: icon}).bindPopup('<b>Pollution Source:</b> Scherer Power Plant'+ "<br>" + '<b>Metric Tons Released:</b> 20.5 Million'),
+        alabama = L.marker([33.631013, -87.057016], {icon: icon}).bindPopup('<b>Pollution Source:</b> Alabama Power Company'+ "<br>" + '<b>Metric Tons Released:</b> 19.9 Million'),
+        navajo = L.marker([36.903548, -111.390782], {icon: icon}).bindPopup('<b>Pollution Source:</b> Navajo Power Plant'  + "<br>" + '<b>Metric Tons Released:</b> 17.2 Million'),
+        gibson = L.marker([38.372031, -87.767415], {icon: icon}).bindPopup('<b>Pollution Source:</b> Gibson Power Plant'+ "<br>" + '<b>Metric Tons Released:</b> 16.3 Million'),
+        washington = L.marker([29.484399, -95.62942], {icon: icon}).bindPopup('<b>Pollution Source:</b> W.A. Parish Power Plant'+ "<br>" + '<b>Metric Tons Released:</b> 16.1 Million'),
+        rockport = L.marker([37.92739, -87.038363], {icon: icon}).bindPopup('<b>Pollution Source:</b> Rockport Power Plant'+ "<br>" + '<b>Metric Tons Released:</b> 15.8 Million'),
+        bowen = L.marker([34.113739, -84.925529], {icon: icon}).bindPopup('<b>Pollution Source:</b> Bowen Power Plant'+ "<br>" + '<b>Metric Tons Released:</b> 15.6 Million'),
+        bruce= L.marker([40.630728, -80.42155], {icon: icon}).bindPopup('<b>Pollution Source:</b> Bruce Mansfield Power Plant'+ "<br>" + '<b>Metric Tons Released:</b> 15.6 Million'),
+        gavin = L.marker([38.94229, -82.112083], {icon: icon}).bindPopup('<b>Pollution Source:</b> Gavin Power Plant'+ "<br>" + '<b>Metric Tons Released:</b> 15.6 Million'),
+        calaveras = L.marker([29.289989, -98.353913], {icon: icon}).bindPopup('<b>Pollution Source:</b> Calaveras Power Station'+ "<br>" + '<b>Metric Tons Released:</b> 15.4 Million');
 
     //converts sources into layer
-    var powerPlants = L.layerGroup([scherer, alabama, navajo, gibson, washington, rockport, bowen, bruce,
+    var powerPlants = L.featureGroup([scherer, alabama, navajo, gibson, washington, rockport, bowen, bruce,
         gavin, calaveras]);
+
 
     //provides styling name for layer
     var overlayMaps = {
@@ -233,9 +233,133 @@ function overlayData(map){
     };
 
     //adds control to map
-    L.control.layers(null, overlayMaps).addTo(map);
+    var layerControls = L.control.layers(null, overlayMaps).addTo(map);
+
+    //creates popup on panel when overlay is activated
+    map.on('overlayadd', function(e){
+        console.log(e);
+        $("#textPanel").empty();
+        $("#textPanel").append('Click on the smokestacks to see what the largest sources of green house gas emmisions in the US are!');
+    });
+    
+    //deletes popup when overlay is removed
+    map.on('overlayremove', function(){
+        $('#textPanel').empty();
+    });
+    
 
 }
+
+
+function createLegend(map, attributes){
+    var LegendControl = L.Control.extend({
+        options: {
+            position: 'bottomright'
+
+        },
+
+        onAdd: function (map) {
+            // create the control container with a particular class name
+            var container = L.DomUtil.create('div', 'legend-control-container');
+
+            //add temporal legend div to container
+            $(container).append('<div id="temporal-legend">')
+
+            //Step 1: start attribute legend svg string
+            var svg = '<svg id="attribute-legend" width="160px" height="80px">';
+
+             //array of circle names to base loop on
+            //object to base loop on...replaces Example 3.10 line 1
+        var circles = {
+            max: 20,
+            mean: 40,
+            min: 60
+        };
+
+        //loop to add each circle and text to svg string
+        for (var circle in circles){
+            //circle string
+            svg += '<circle class="legend-circle" id="' + circle + '" fill="#2ca25f" fill-opacity="0.8" stroke="#000000" cx="38"/>';
+
+            //text string
+            svg += '<text id="' + circle + '-text" x="75" y= "' + (circles[circle] + 11) + '"></text>';
+        };
+
+            //close svg string
+            svg += "</svg>";
+
+            //add attribute legend svg to container
+            $(container).append(svg);
+
+            return container;
+        }
+    });
+
+    map.addControl(new LegendControl());
+    //updates legend when legend is created
+    updateLegend(map, attributes[0]);
+};
+
+//Calculate the max, mean, and min values for a given attribute
+function getCircleValues(map, attribute){
+    //start with min at highest possible and max at lowest possible number
+    var min = Infinity,
+        max = -Infinity;
+
+    map.eachLayer(function(layer){
+        //get the attribute value
+        if (layer.feature){
+            var attributeValue = Number(layer.feature.properties[attribute]);
+
+            //test for min
+            if (attributeValue < min){
+                min = attributeValue;
+            };
+
+            //test for max
+            if (attributeValue > max){
+                max = attributeValue;
+            };
+        };
+    });
+
+    //set mean
+    var mean = (max + min) / 2;
+
+    //return values as an object
+    return {
+        max: max,
+        mean: mean,
+        min: min
+    };
+};
+
+//Example 3.7 line 1...Update the legend with new attribute
+function updateLegend(map, attribute){
+    //create content for legend
+    var year = attribute.split("_")[1];
+    var content = "<b>Air Quality Index in " + "20" + year;
+
+    //replace legend content
+    $('#temporal-legend').html(content);
+
+    //get the max, mean, and min values as an object
+    var circleValues = getCircleValues(map, attribute);
+
+    for (var key in circleValues){
+        //get the radius
+        var radius = calcPropRadius(circleValues[key]);
+
+        //Step 3: assign the cy and r attributes
+        $('#'+key).attr({
+            cy: 74 - radius,
+            r: radius
+        });
+         //Step 4: add legend text
+        $('#'+key+'-text').text(Math.round(circleValues[key]*100)/100);
+    };
+    };
+
 
 //Import GeoJSON data
 function getData(map){
@@ -249,11 +373,18 @@ function getData(map){
 
             //call function to create proportional symbols
             createPropSymbols(response, map, attributes);
+            //call sequence function
             createSequenceControls(map, attributes);
+            //call overlay function
             overlayData(map);
+            //create legend
+            createLegend(map, attributes);
         }
     });
+
+
 };
+
 
 
 
